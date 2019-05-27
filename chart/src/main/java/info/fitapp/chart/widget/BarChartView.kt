@@ -17,7 +17,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     companion object {
 
         const val RADIUS = 10f
-        const val INNER_MARGIN = 20f
+        const val INNER_MARGIN = 25f
         const val TEXT_SIZE = 40f
 
         const val SPACING_TEXT_TO_BAR = 12f
@@ -81,7 +81,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             val widthPerBar = (availableWidthForBars - ((data.size - 1) * INNER_MARGIN)).div(data.size)
             val maxValue = data.max()!!
 
-            // TODO: Draw horizontal lines.
+            // TODO: Flexible intervals
             sequenceOf(10, 20, 30, 40).forEach {
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
                 val bottomOffset =
@@ -93,6 +93,13 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 val pos = topOffset + (maxBarHeight - height)
 
                 drawLine(paddingStart.toFloat(), pos, totalWidth - paddingEnd.toFloat(), pos, horizontalLinePaint)
+
+                drawText(
+                    it.toString(),
+                    paddingStart.toFloat() + LEFT_BAR_MARGIN.div(2),
+                    pos + TEXT_SIZE + 10f, // TODO: Move 5f to Margin
+                    textPaint
+                )
             }
 
             data.forEachIndexed { index, value ->

@@ -16,6 +16,6 @@
             android:padding="10dp"
             android:background="@color/chartBackground"
             android:layout_width="match_parent"
-            android:layout_height="300dp"/>
+            android:layout_height="260dp"/>
 
 </LinearLayout>
