@@ -1,11 +1,13 @@
 package info.fitapp.chart.widget
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import info.fitapp.chart.R
+
 
 /**
  * @author Markus Deutsch <markus.deutsch@fitapp.info>
@@ -28,6 +30,15 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         style = Paint.Style.FILL
         color = Color.WHITE
         textSize = 10f
+        shader = LinearGradient(
+            0f,
+            0f,
+            0f,
+            1000f, // TODO: Make flexible.
+            ContextCompat.getColor(context, R.color.gradientStart),
+            ContextCompat.getColor(context, R.color.gradientEnd),
+            Shader.TileMode.CLAMP
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -40,17 +51,31 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
+
+
         canvas?.apply {
 
             val widthPerBar = (availableWidth - ((data.size - 1) * INNER_MARGIN)).div(data.size)
+            val maxValue = data.max()!!
 
             data.forEachIndexed { index, value ->
+
+                val scaleFactor = value.toFloat().div(maxValue) // TODO: Handle maxvalue = 0
+                val height = availableHeight * scaleFactor
+
                 val startPosition = paddingLeft + index * (widthPerBar + INNER_MARGIN)
+                val totalHeight = availableHeight + paddingTop.toFloat() + paddingBottom.toFloat()
+
+                val calculatedTop = paddingTop.toFloat() + (availableHeight - height)
+                val calculatedBottom = totalHeight - paddingBottom.toFloat()
+
+                Log.d("BarChartView", "[$index, $value] Top: $calculatedTop, Bottom: $calculatedBottom")
+
                 drawRoundRect(
                     startPosition,
-                    paddingBottom.toFloat(),
+                    calculatedTop,
                     startPosition + widthPerBar,
-                    paddingTop.toFloat() + availableHeight,
+                    calculatedBottom,
                     RADIUS,
                     RADIUS,
                     barPaint
