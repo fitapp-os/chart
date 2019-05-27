@@ -30,6 +30,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private var data = listOf(10, 20, 30, 0, 45, 35, 25)
 
     private var totalHeight = 0
+    private var totalWidth = 0
     private var availableHeight = 0
     private var availableWidth = 0
 
@@ -45,10 +46,17 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         textAlign = Paint.Align.CENTER
     }
 
+    private val horizontalLinePaint = Paint(ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.WHITE
+        strokeWidth = 2f
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
         totalHeight = h
+        totalWidth = w
         availableHeight = h - (paddingTop + paddingBottom)
         availableWidth = w - (paddingStart + paddingEnd)
 
@@ -74,6 +82,18 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             val maxValue = data.max()!!
 
             // TODO: Draw horizontal lines.
+            sequenceOf(10, 20, 30, 40).forEach {
+                val topOffset = paddingTop.toFloat() + TOP_MARGIN
+                val bottomOffset =
+                    paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
+                val maxBarHeight = totalHeight - (topOffset + bottomOffset)
+
+                val scaleFactor = it.toFloat().div(maxValue) // TODO: Handle maxvalue = 0
+                val height = maxBarHeight * scaleFactor
+                val pos = topOffset + (maxBarHeight - height)
+
+                drawLine(paddingStart.toFloat(), pos, totalWidth - paddingEnd.toFloat(), pos, horizontalLinePaint)
+            }
 
             data.forEachIndexed { index, value ->
 
