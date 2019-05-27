@@ -2,9 +2,9 @@ package info.fitapp.chart.widget
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import info.fitapp.chart.R
 
@@ -18,86 +18,100 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
         const val RADIUS = 10f
         const val INNER_MARGIN = 20f
+        const val TEXT_SIZE = 40f
+
+        const val SPACING_TEXT_TO_BAR = 12f
+        const val TOP_MARGIN = 0f
+        const val BOTTOM_MARGIN = 0f
+        const val LEFT_BAR_MARGIN = 100f
 
     }
 
-    private var data = listOf(10, 20, 30, 40, 45, 35, 25)
+    private var data = listOf(10, 20, 30, 0, 45, 35, 25)
 
+    private var totalHeight = 0
     private var availableHeight = 0
     private var availableWidth = 0
 
-    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val barPaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.WHITE
-        textSize = 10f
-        shader = LinearGradient(
+        textSize = TEXT_SIZE
+    }
+
+    private val textPaint = Paint(ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        textSize = TEXT_SIZE
+        textAlign = Paint.Align.CENTER
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        totalHeight = h
+        availableHeight = h - (paddingTop + paddingBottom)
+        availableWidth = w - (paddingStart + paddingEnd)
+
+        barPaint.shader = LinearGradient(
             0f,
             0f,
             0f,
-            1000f, // TODO: Make flexible.
+            h.toFloat(),
             ContextCompat.getColor(context, R.color.gradientStart),
             ContextCompat.getColor(context, R.color.gradientEnd),
             Shader.TileMode.CLAMP
         )
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-
-        availableHeight = h - (paddingTop + paddingBottom)
-        availableWidth = w - (paddingStart + paddingEnd)
-    }
-
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-
-
         canvas?.apply {
 
-            val widthPerBar = (availableWidth - ((data.size - 1) * INNER_MARGIN)).div(data.size)
+            val leftChartMargin = paddingLeft + LEFT_BAR_MARGIN
+            val availableWidthForBars = availableWidth - LEFT_BAR_MARGIN
+            val widthPerBar = (availableWidthForBars - ((data.size - 1) * INNER_MARGIN)).div(data.size)
             val maxValue = data.max()!!
+
+            // TODO: Draw horizontal lines.
 
             data.forEachIndexed { index, value ->
 
+                val topOffset = paddingTop.toFloat() + TOP_MARGIN
+                val bottomOffset =
+                    paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
+
+                val maxBarHeight = totalHeight - (topOffset + bottomOffset)
                 val scaleFactor = value.toFloat().div(maxValue) // TODO: Handle maxvalue = 0
-                val height = availableHeight * scaleFactor
+                val height = maxBarHeight * scaleFactor
 
-                val startPosition = paddingLeft + index * (widthPerBar + INNER_MARGIN)
-                val totalHeight = availableHeight + paddingTop.toFloat() + paddingBottom.toFloat()
+                val startPosition = leftChartMargin + index * (widthPerBar + INNER_MARGIN)
 
-                val calculatedTop = paddingTop.toFloat() + (availableHeight - height)
-                val calculatedBottom = totalHeight - paddingBottom.toFloat()
+                val calculatedTop = topOffset + (maxBarHeight - height)
+                val calculatedBottom = totalHeight - bottomOffset
 
-                Log.d("BarChartView", "[$index, $value] Top: $calculatedTop, Bottom: $calculatedBottom")
+                val calculatedRight = startPosition + widthPerBar
+                val calculatedLeft = startPosition
 
                 drawRoundRect(
-                    startPosition,
+                    calculatedLeft,
                     calculatedTop,
-                    startPosition + widthPerBar,
+                    calculatedRight,
                     calculatedBottom,
                     RADIUS,
                     RADIUS,
                     barPaint
                 )
+
+                drawText(
+                    value.toString(),
+                    (calculatedLeft + calculatedRight) / 2,
+                    totalHeight - (BOTTOM_MARGIN + paddingBottom.toFloat()),
+                    textPaint
+                )
             }
 
-
         }
 
-        /**
-         *
-         *      * Draw the specified round-rect using the specified paint. The roundrect will be filled or
-         * framed based on the Style in the paint.
-         *
-         * @param rx The x-radius of the oval used to round the corners
-         * @param ry The y-radius of the oval used to round the corners
-         * @param paint The paint used to draw the roundRect
-        public void drawRoundRect(float left, float top, float right, float bottom, float rx, float ry,
-        @NonNull Paint paint) {
-        super.drawRoundRect(left, top, right, bottom, rx, ry, paint);
-        }
-
-         */
     }
 }
