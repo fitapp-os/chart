@@ -25,9 +25,11 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         const val BOTTOM_MARGIN = 0f
         const val LEFT_BAR_MARGIN = 100f
 
+        const val NUMBER_OF_LABELS = 5
+
     }
 
-    private var data = listOf(10, 20, 30, 0, 45, 35, 25)
+    private var data = listOf(10, 20, 30, 0, 45, 35, 25, 55, 3, 1, 52)
 
     private var totalHeight = 0
     private var totalWidth = 0
@@ -81,21 +83,23 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             val widthPerBar = (availableWidthForBars - ((data.size - 1) * INNER_MARGIN)).div(data.size)
             val maxValue = data.max()!!
 
-            // TODO: Flexible intervals
-            sequenceOf(10, 20, 30, 40).forEach {
+            // Generate intervals
+            val stepSize = maxValue.toFloat().div(NUMBER_OF_LABELS).toInt()
+
+            for (numericLabel in stepSize..maxValue step stepSize) {
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
                 val bottomOffset =
                     paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
 
-                val scaleFactor = it.toFloat().div(maxValue) // TODO: Handle maxvalue = 0
+                val scaleFactor = numericLabel.toFloat().div(maxValue) // TODO: Handle maxvalue = 0
                 val height = maxBarHeight * scaleFactor
                 val pos = topOffset + (maxBarHeight - height)
 
                 drawLine(paddingStart.toFloat(), pos, totalWidth - paddingEnd.toFloat(), pos, horizontalLinePaint)
 
                 drawText(
-                    it.toString(),
+                    numericLabel.toString(),
                     paddingStart.toFloat() + LEFT_BAR_MARGIN.div(2),
                     pos + TEXT_SIZE + 10f, // TODO: Move 5f to Margin
                     textPaint
