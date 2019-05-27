@@ -16,7 +16,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
     companion object {
 
-        const val RADIUS = 10f
+        const val RADIUS = 20f
         const val INNER_MARGIN = 25f
         const val TEXT_SIZE = 40f
 
@@ -41,14 +41,14 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     }
 
     private val textPaint = Paint(ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
+        color = ContextCompat.getColor(context, R.color.labelColor)
         textSize = TEXT_SIZE
         textAlign = Paint.Align.CENTER
     }
 
     private val horizontalLinePaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.WHITE
+        color = ContextCompat.getColor(context, R.color.horizontalGridColor)
         strokeWidth = 2f
     }
 
