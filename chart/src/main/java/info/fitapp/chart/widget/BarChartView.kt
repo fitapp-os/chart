@@ -1,11 +1,13 @@
 package info.fitapp.chart.widget
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import info.fitapp.chart.R
 import info.fitapp.chart.model.DataSet
 import kotlin.math.roundToInt
@@ -26,6 +28,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         const val TOP_MARGIN = 0f
         const val BOTTOM_MARGIN = 0f
         const val LEFT_BAR_MARGIN = 100f
+        const val ANIMATION_DURATION = 800L
 
         const val NUMBER_OF_LABELS = 5
 
@@ -35,6 +38,11 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private var totalWidth = 0
     private var availableHeight = 0
     private var availableWidth = 0
+    private var animatedScale = 1f
+        set(value) {
+            field = value
+            postInvalidateOnAnimation()
+        }
 
     private var dataSet: DataSet? = null
 
@@ -56,14 +64,29 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         strokeWidth = 2f
     }
 
+    private val barAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+        addUpdateListener {
+            animatedScale = it.animatedValue as Float
+        }
+        duration = ANIMATION_DURATION
+        interpolator = DecelerateInterpolator()
+    }
+
     fun setDataSet(set: DataSet) {
+        //barAnimator?.cancel()
         this.dataSet = set
+        barAnimator.start()
         invalidate()
     }
 
     fun setTypeface(typeface: Typeface) {
         textPaint.typeface = typeface
         invalidate()
+    }
+
+    override fun onDetachedFromWindow() {
+        barAnimator?.cancel()
+        super.onDetachedFromWindow()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -129,7 +152,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
                 val scaleFactor = point.value.div(maxValue) // TODO: Handle maxvalue = 0
-                val height = maxBarHeight * scaleFactor
+                val height = maxBarHeight * scaleFactor * animatedScale
 
                 val startPosition = leftChartMargin + index * (widthPerBar + INNER_MARGIN)
 
