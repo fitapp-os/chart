@@ -14,7 +14,8 @@
 
     <info.fitapp.chart.widget.BarChartView
             android:padding="10dp"
+            android:id="@+id/chart"
             android:layout_width="match_parent"
-            android:layout_height="260dp"/>
+            android:layout_height="220dp"/>
 
 </LinearLayout>
