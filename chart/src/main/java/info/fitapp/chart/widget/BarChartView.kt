@@ -9,6 +9,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import info.fitapp.chart.R
+import info.fitapp.chart.formatter.DefaultValueFormatter
+import info.fitapp.chart.formatter.ValueFormatter
 import info.fitapp.chart.model.DataSet
 import kotlin.math.roundToInt
 
@@ -21,17 +23,18 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     companion object {
 
         const val RADIUS = 20f
-        const val INNER_MARGIN = 25f
         const val TEXT_SIZE = 40f
 
         const val SPACING_TEXT_TO_BAR = 12f
         const val TOP_MARGIN = 0f
         const val BOTTOM_MARGIN = 0f
-        const val LEFT_BAR_MARGIN = 100f
         const val ANIMATION_DURATION = 800L
         const val COMPARISON_SHIFT = 0.1f
 
-        const val NUMBER_OF_LABELS = 5
+        const val NUMBER_OF_LABELS = 4
+
+        private const val MINIMUM_INNER_MARGIN = 4f
+        private const val MAXIMUM_INNER_MARGIN = 25f
 
     }
 
@@ -46,6 +49,12 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         }
 
     private var dataSet: DataSet? = null
+
+    private var valueFormatter: ValueFormatter<Float> = DefaultValueFormatter<Float>()
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     private val barPaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -77,6 +86,20 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         }
         duration = ANIMATION_DURATION
         interpolator = DecelerateInterpolator()
+    }
+
+    private fun getInnerMargin(): Float {
+        val minThreshold = 25 // Starting at this value, the min applies.
+        val size = dataSet?.getSize() ?: 0
+
+        val range = MAXIMUM_INNER_MARGIN - MINIMUM_INNER_MARGIN
+        val scaleFactor = Math.min(1f, size.toFloat() / minThreshold.toFloat())
+        return MINIMUM_INNER_MARGIN + range * (1 - scaleFactor)
+    }
+
+    private fun getHorizontalLabelStepSize(): Int {
+        val size = dataSet?.getSize() ?: 0
+        return Math.ceil(size.toFloat().div(10).toDouble()).toInt()
     }
 
     fun setDataSet(set: DataSet) {
@@ -133,17 +156,11 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
         canvas?.apply {
 
-            val leftChartMargin = paddingLeft + LEFT_BAR_MARGIN
-            val availableWidthForBars = availableWidth - LEFT_BAR_MARGIN
+            val maxValue = data.getMaxValue()
 
-            val totalWithPerPoint = (availableWidthForBars - ((data.getSize() - 1) * INNER_MARGIN)).div(data.getSize())
-            val widthPerBar = totalWithPerPoint * (1 - COMPARISON_SHIFT)
-
-            val comparisonGap = totalWithPerPoint * COMPARISON_SHIFT
-            val maxValue = data.getMaxValue()!! // TODO: Also consider comparison value!
-
-            // Generate intervals
+            // Generate and measure intervals.
             val stepSize = maxValue.div(NUMBER_OF_LABELS).toInt()
+            var textWidth = 0f
 
             for (numericLabel in stepSize..maxValue.roundToInt() step stepSize) {
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
@@ -157,13 +174,27 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
                 drawLine(paddingStart.toFloat(), pos, totalWidth - paddingEnd.toFloat(), pos, horizontalLinePaint)
 
+                val label = valueFormatter.format(numericLabel.toFloat())
+                textWidth = Math.max(textWidth, textPaint.measureText(label))
+
                 drawText(
-                    numericLabel.toString(),
-                    paddingStart.toFloat() + LEFT_BAR_MARGIN.div(2),
+                    label,
+                    paddingStart.toFloat() + textWidth.div(2),
                     pos + TEXT_SIZE + 10f, // TODO: Move 5f to Margin
                     textPaint
                 )
+
+
             }
+
+            val leftChartMargin = paddingLeft + textWidth + SPACING_TEXT_TO_BAR
+            val availableWidthForBars = availableWidth - textWidth
+
+            val totalWithPerPoint =
+                (availableWidthForBars - ((data.getSize() - 1) * getInnerMargin())).div(data.getSize())
+            val widthPerBar = totalWithPerPoint * (1 - COMPARISON_SHIFT)
+
+            val comparisonGap = totalWithPerPoint * COMPARISON_SHIFT
 
             data.items.forEachIndexed { index, point ->
 
@@ -176,7 +207,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 val height = maxBarHeight * scaleFactor * animatedScale
                 val comparisonHeight = maxBarHeight * point.comparisonValue.div(maxValue) * animatedScale
 
-                val startPosition = leftChartMargin + index * (totalWithPerPoint + INNER_MARGIN)
+                val startPosition = leftChartMargin + index * (totalWithPerPoint + getInnerMargin())
 
                 val calculatedTop = topOffset + (maxBarHeight - height)
                 val calculatedBottom = totalHeight - bottomOffset
@@ -208,12 +239,15 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                     barPaint
                 )
 
-                drawText(
-                    point.label,
-                    (calculatedLeft + calculatedRight + comparisonGap) / 2,
-                    totalHeight - (BOTTOM_MARGIN + paddingBottom.toFloat()),
-                    textPaint
-                )
+                if (index % getHorizontalLabelStepSize() == 0) {
+                    drawText(
+                        point.label,
+                        (calculatedLeft + calculatedRight + comparisonGap) / 2,
+                        totalHeight - (BOTTOM_MARGIN + paddingBottom.toFloat()),
+                        textPaint
+                    )
+                }
+
             }
 
         }
