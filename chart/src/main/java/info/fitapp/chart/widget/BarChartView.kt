@@ -29,6 +29,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         const val BOTTOM_MARGIN = 0f
         const val LEFT_BAR_MARGIN = 100f
         const val ANIMATION_DURATION = 800L
+        const val COMPARISON_SHIFT = 0.1f
 
         const val NUMBER_OF_LABELS = 5
 
@@ -49,6 +50,12 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private val barPaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.WHITE
+        textSize = TEXT_SIZE
+    }
+
+    private val comparisonPaint = Paint(ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.GRAY
         textSize = TEXT_SIZE
     }
 
@@ -106,6 +113,16 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             ContextCompat.getColor(context, R.color.gradientEnd),
             Shader.TileMode.CLAMP
         )
+
+        comparisonPaint.shader = LinearGradient(
+            0f,
+            0f,
+            0f,
+            h.toFloat(),
+            ContextCompat.getColor(context, R.color.comparisonGradientStart),
+            ContextCompat.getColor(context, R.color.coparisonGradientEnd),
+            Shader.TileMode.CLAMP
+        )
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -118,8 +135,12 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
             val leftChartMargin = paddingLeft + LEFT_BAR_MARGIN
             val availableWidthForBars = availableWidth - LEFT_BAR_MARGIN
-            val widthPerBar = (availableWidthForBars - ((data.getSize() - 1) * INNER_MARGIN)).div(data.getSize())
-            val maxValue = data.getMaxValue()!!
+
+            val totalWithPerPoint = (availableWidthForBars - ((data.getSize() - 1) * INNER_MARGIN)).div(data.getSize())
+            val widthPerBar = totalWithPerPoint * (1 - COMPARISON_SHIFT)
+
+            val comparisonGap = totalWithPerPoint * COMPARISON_SHIFT
+            val maxValue = data.getMaxValue()!! // TODO: Also consider comparison value!
 
             // Generate intervals
             val stepSize = maxValue.div(NUMBER_OF_LABELS).toInt()
@@ -153,8 +174,9 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
                 val scaleFactor = point.value.div(maxValue) // TODO: Handle maxvalue = 0
                 val height = maxBarHeight * scaleFactor * animatedScale
+                val comparisonHeight = maxBarHeight * point.comparisonValue.div(maxValue) * animatedScale
 
-                val startPosition = leftChartMargin + index * (widthPerBar + INNER_MARGIN)
+                val startPosition = leftChartMargin + index * (totalWithPerPoint + INNER_MARGIN)
 
                 val calculatedTop = topOffset + (maxBarHeight - height)
                 val calculatedBottom = totalHeight - bottomOffset
@@ -162,6 +184,20 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 val calculatedRight = startPosition + widthPerBar
                 val calculatedLeft = startPosition
 
+                val comparisonTop = topOffset + (maxBarHeight - comparisonHeight)
+
+                // Draw comparison
+                drawRoundRect(
+                    calculatedLeft + comparisonGap,
+                    comparisonTop,
+                    calculatedRight + comparisonGap,
+                    calculatedBottom,
+                    RADIUS,
+                    RADIUS,
+                    comparisonPaint
+                )
+
+                // Draw value
                 drawRoundRect(
                     calculatedLeft,
                     calculatedTop,
@@ -174,7 +210,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
                 drawText(
                     point.label,
-                    (calculatedLeft + calculatedRight) / 2,
+                    (calculatedLeft + calculatedRight + comparisonGap) / 2,
                     totalHeight - (BOTTOM_MARGIN + paddingBottom.toFloat()),
                     textPaint
                 )
