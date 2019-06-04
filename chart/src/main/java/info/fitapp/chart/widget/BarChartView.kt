@@ -152,14 +152,14 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         super.onDraw(canvas)
 
         val data = dataSet
-        if (data == null || data.getSize() <= 0) return
+        if (data == null || data.getSize() <= 0 || data.getMaxValue().roundToInt() <= 0) return
 
         canvas?.apply {
 
             val maxValue = data.getMaxValue()
 
             // Generate and measure intervals.
-            val stepSize = maxValue.div(NUMBER_OF_LABELS).toInt()
+            val stepSize = Math.max(1, maxValue.div(NUMBER_OF_LABELS).toInt())
             var textWidth = 0f
 
             for (numericLabel in stepSize..maxValue.roundToInt() step stepSize) {

@@ -9,8 +9,4 @@ class DataPoint(val value: Float, val label: String) {
 
     var comparisonValue = 0f
 
-    init {
-        comparisonValue = (value * (Math.random() + 0.3)).toFloat()
-    }
-
 }
