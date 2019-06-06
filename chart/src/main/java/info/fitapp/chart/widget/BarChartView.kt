@@ -61,7 +61,13 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         textSize = TEXT_SIZE
     }
 
-    private val textPaint = Paint(ANTI_ALIAS_FLAG).apply {
+    private val xAxisLabelPaint = Paint(ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.labelColor)
+        textSize = TEXT_SIZE
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val yAxisLabelPaint = Paint(ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.labelColor)
         textSize = TEXT_SIZE
         textAlign = Paint.Align.RIGHT
@@ -113,7 +119,8 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     }
 
     fun setTypeface(typeface: Typeface) {
-        textPaint.typeface = typeface
+        xAxisLabelPaint.typeface = typeface
+        yAxisLabelPaint.typeface = typeface
         invalidate()
     }
 
@@ -166,7 +173,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             // Iterate twice: once to get all text widths, once to paint.
             for (numericLabel in stepSize..maxValue.roundToInt() step stepSize) {
                 val label = data.valueFormatter.format(numericLabel.toFloat())
-                maxTextWidth = Math.max(maxTextWidth, textPaint.measureText(label))
+                maxTextWidth = Math.max(maxTextWidth, yAxisLabelPaint.measureText(label))
             }
 
             // Now paint!
@@ -188,7 +195,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                     label,
                     paddingStart.toFloat() + maxTextWidth,
                     pos + TEXT_SIZE + 10f, // TODO: Move 5f to Margin
-                    textPaint
+                    yAxisLabelPaint
                 )
 
 
@@ -255,7 +262,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                         data.labelFormatter.format(point.label),
                         (calculatedLeft + calculatedRight + comparisonSpace) / 2,
                         totalHeight - (BOTTOM_MARGIN + paddingBottom.toFloat()),
-                        textPaint
+                        xAxisLabelPaint
                     )
                 }
 
