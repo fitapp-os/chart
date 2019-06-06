@@ -36,6 +36,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
     }
 
+    private var showComparisonIfAvailable = true
     private var totalHeight = 0
     private var totalWidth = 0
     private var availableHeight = 0
@@ -63,7 +64,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private val textPaint = Paint(ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.labelColor)
         textSize = TEXT_SIZE
-        textAlign = Paint.Align.CENTER
+        textAlign = Paint.Align.RIGHT
     }
 
     private val horizontalLinePaint = Paint(ANTI_ALIAS_FLAG).apply {
@@ -78,6 +79,13 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         }
         duration = ANIMATION_DURATION
         interpolator = DecelerateInterpolator()
+    }
+
+    private fun setShowComparisonIfAvailable(show: Boolean) {
+        if (show != showComparisonIfAvailable) {
+            showComparisonIfAvailable = show
+            invalidate()
+        }
     }
 
     private fun getInnerMargin(): Float {
@@ -147,32 +155,38 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         super.onDraw(canvas)
 
         val data = dataSet
-        if (data == null || data.getSize() <= 0 || data.getMaxValue().roundToInt() <= 0) return
+        val maxValue = if (showComparisonIfAvailable) data?.getMaxValue() else data?.getPrimaryMaxValue()
+        if (data == null || maxValue == null || data.getSize() <= 0 || maxValue <= 0) return
 
         canvas?.apply {
 
-            val maxValue = data.getMaxValue()
             val stepSize = data.stepMaker.getStepSize(NUMBER_OF_LABELS, maxValue)
-            var textWidth = 0f
+            var maxTextWidth = 0f
 
+            // Iterate twice: once to get all text widths, once to paint.
+            for (numericLabel in stepSize..maxValue.roundToInt() step stepSize) {
+                val label = data.valueFormatter.format(numericLabel.toFloat())
+                maxTextWidth = Math.max(maxTextWidth, textPaint.measureText(label))
+            }
+
+            // Now paint!
             for (numericLabel in stepSize..maxValue.roundToInt() step stepSize) {
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
                 val bottomOffset =
                     paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
 
-                val scaleFactor = numericLabel.toFloat().div(maxValue) // TODO: Handle maxvalue = 0
+                val scaleFactor = numericLabel.toFloat().div(maxValue)
                 val height = maxBarHeight * scaleFactor
                 val pos = topOffset + (maxBarHeight - height)
 
                 drawLine(paddingStart.toFloat(), pos, totalWidth - paddingEnd.toFloat(), pos, horizontalLinePaint)
 
                 val label = data.valueFormatter.format(numericLabel.toFloat())
-                textWidth = Math.max(textWidth, textPaint.measureText(label))
 
                 drawText(
                     label,
-                    paddingStart.toFloat() + textWidth.div(2),
+                    paddingStart.toFloat() + maxTextWidth,
                     pos + TEXT_SIZE + 10f, // TODO: Move 5f to Margin
                     textPaint
                 )
@@ -180,12 +194,13 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
             }
 
-            val leftChartMargin = paddingLeft + textWidth + SPACING_TEXT_TO_BAR
-            val availableWidthForBars = availableWidth - (textWidth + SPACING_TEXT_TO_BAR)
+            val leftChartMargin = paddingLeft + maxTextWidth + SPACING_TEXT_TO_BAR
+            val availableWidthForBars = availableWidth - (maxTextWidth + SPACING_TEXT_TO_BAR)
 
             val totalWithPerPoint =
                 (availableWidthForBars - ((data.getSize() - 1) * getInnerMargin())).div(data.getSize())
-            val widthPerBar = totalWithPerPoint * (1 - COMPARISON_SHIFT)
+            val widthPerBar =
+                if (showComparisonIfAvailable && data.hasComparisonData()) totalWithPerPoint * (1 - COMPARISON_SHIFT) else totalWithPerPoint
 
             val comparisonGap = totalWithPerPoint * COMPARISON_SHIFT
 
@@ -196,7 +211,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                     paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
 
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
-                val scaleFactor = point.value.div(maxValue) // TODO: Handle maxvalue = 0
+                val scaleFactor = point.value.div(maxValue)
                 val height = maxBarHeight * scaleFactor * animatedScale
                 val comparisonHeight = maxBarHeight * point.comparisonValue.div(maxValue) * animatedScale
 
@@ -211,15 +226,17 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 val comparisonTop = topOffset + (maxBarHeight - comparisonHeight)
 
                 // Draw comparison
-                drawRoundRect(
-                    calculatedLeft + comparisonGap,
-                    comparisonTop,
-                    calculatedRight + comparisonGap,
-                    calculatedBottom,
-                    RADIUS,
-                    RADIUS,
-                    comparisonPaint
-                )
+                if (showComparisonIfAvailable) {
+                    drawRoundRect(
+                        calculatedLeft + comparisonGap,
+                        comparisonTop,
+                        calculatedRight + comparisonGap,
+                        calculatedBottom,
+                        RADIUS,
+                        RADIUS,
+                        comparisonPaint
+                    )
+                }
 
                 // Draw value
                 drawRoundRect(
@@ -233,9 +250,10 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 )
 
                 if (index % getHorizontalLabelStepSize() == 0) {
+                    val comparisonSpace = if (data.hasComparisonData()) comparisonGap else 0f
                     drawText(
                         data.labelFormatter.format(point.label),
-                        (calculatedLeft + calculatedRight + comparisonGap) / 2,
+                        (calculatedLeft + calculatedRight + comparisonSpace) / 2,
                         totalHeight - (BOTTOM_MARGIN + paddingBottom.toFloat()),
                         textPaint
                     )
