@@ -1,7 +1,7 @@
 package info.fitapp.chart.steps
 
 /**
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 abstract class StepMaker {
 

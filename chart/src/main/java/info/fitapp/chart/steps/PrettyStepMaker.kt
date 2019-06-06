@@ -4,7 +4,7 @@ import kotlin.math.roundToInt
 
 /**
  * Tries to make 10er, 100er, 1000er,... steps, based on the max number.
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 class PrettyStepMaker : StepMaker() {
 

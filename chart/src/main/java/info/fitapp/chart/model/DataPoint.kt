@@ -3,7 +3,7 @@ package info.fitapp.chart.model
 /**
  * Discrete label, continuous data point.
  *
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 class DataPoint(val value: Float, val label: String) {
 

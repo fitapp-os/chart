@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 
 
 /**
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 

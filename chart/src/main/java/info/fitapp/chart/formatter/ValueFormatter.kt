@@ -1,7 +1,7 @@
 package info.fitapp.chart.formatter
 
 /**
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 interface ValueFormatter<T> {
 

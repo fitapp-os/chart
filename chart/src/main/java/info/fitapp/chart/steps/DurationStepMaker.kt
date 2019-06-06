@@ -4,7 +4,7 @@ import kotlin.math.roundToInt
 
 /**
  * Tries to make steps in full minutes, tens-of-minutes, hours (depending on the max value).
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 class DurationStepMaker : StepMaker() {
 

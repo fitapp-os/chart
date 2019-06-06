@@ -4,7 +4,7 @@ import kotlin.math.roundToInt
 
 /**
  * Just divides the max number by the step count and performs some rounding.
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 class DefaultStepMaker : StepMaker() {
 

@@ -9,7 +9,7 @@ import info.fitapp.chart.steps.StepMaker
 
 /**
  * Discrete labels, continuous values.
- * @author Markus Deutsch <markus.deutsch@fitapp.info>
+ * @author Markus Deutsch @moopat
  */
 open class DataSet {
 
