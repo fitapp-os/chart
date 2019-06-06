@@ -81,7 +81,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         interpolator = DecelerateInterpolator()
     }
 
-    private fun setShowComparisonIfAvailable(show: Boolean) {
+    fun setShowComparisonIfAvailable(show: Boolean) {
         if (show != showComparisonIfAvailable) {
             showComparisonIfAvailable = show
             invalidate()
