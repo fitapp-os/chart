@@ -5,7 +5,32 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = "info.fitapp"
-version = "2.0.0"
+version = "2.0.2"
+
+ext {
+
+    bintrayRepo = "maven"
+    bintrayName = "chart"
+
+    publishedGroupId = 'info.fitapp'
+    libraryName = 'chart'
+    artifact = 'chart'
+
+    libraryDescription = 'Add simple bar charts to your Android project'
+
+    siteUrl = 'https://github.com/fitapp-os/chart'
+    gitUrl = 'https://github.com/fitapp-os/chart.git'
+
+    libraryVersion = version
+
+    developerId = 'fitapp'
+    developerName = 'Markus Deutsch'
+    developerEmail = 'markus.deutsch@fitapp.info'
+
+    licenseName = 'GNU Lesser General Public License v3.0'
+    licenseUrl = 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
+    allLicenses = ["LGPL-3.0"]
+}
 
 android {
     compileSdkVersion 29
@@ -41,64 +66,7 @@ repositories {
     mavenCentral()
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        repo = "maven"
-        name = "chart"
-        licenses = ["LGPL-3.0"]
-        vcsUrl = "https://github.com/fitapp-os/chart"
-        publish = true
-    }
+if (project.rootProject.file('local.properties').exists()) {
+    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/install.gradle'
+    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/bintray.gradle'
 }
-
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'aar'
-                name 'Chart draws simple bar charts (WIP!)'
-                licenses {
-                    license {
-                        name 'GNU Lesser General Public License v3.0'
-                        url 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'fitapp'
-                        name 'Markus Deutsch'
-                        email 'markus.deutsch@fitapp.info'
-                    }
-                }
-            }
-        }
-    }
-}
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-task findConventions {
-    doLast {
-        println project.getConvention()
-    }
-}
-
