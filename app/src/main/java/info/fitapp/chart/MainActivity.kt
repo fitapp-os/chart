@@ -1,8 +1,8 @@
 package info.fitapp.chart
 
 import android.os.Bundle
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.app.AppCompatActivity
 import info.fitapp.chart.model.DataPoint
 import info.fitapp.chart.model.DataSet
 import kotlinx.android.synthetic.main.activity_main.*
