@@ -21,7 +21,6 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     companion object {
 
         const val RADIUS = 20f
-        const val TEXT_SIZE = 40f
 
         const val SPACING_TEXT_TO_BAR = 12f
         const val TOP_MARGIN = 0f
@@ -42,6 +41,8 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private var comparisonStartColor = ContextCompat.getColor(context, R.color.barChartDefaultComparisonStart)
     private var comparisonEndColor = ContextCompat.getColor(context, R.color.barChartDefaultComparisonEnd)
     private var labelColor = ContextCompat.getColor(context, R.color.barChartDefaultLabelColor)
+    private var labelSize = context.resources.getDimension(R.dimen.barChartDefaultLabelSize)
+
 
     init {
         context.theme.obtainStyledAttributes(
@@ -57,6 +58,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 comparisonStartColor = getColor(R.styleable.BarChartView_comparisonStartColor, comparisonStartColor)
                 comparisonEndColor = getColor(R.styleable.BarChartView_comparisonEndColor, comparisonEndColor)
                 labelColor = getColor(R.styleable.BarChartView_labelColor, labelColor)
+                labelSize = getDimension(R.styleable.BarChartView_labelSize, labelSize)
             } finally {
                 recycle()
             }
@@ -79,24 +81,22 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private val barPaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.WHITE
-        textSize = TEXT_SIZE
     }
 
     private val comparisonPaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.GRAY
-        textSize = TEXT_SIZE
     }
 
     private val xAxisLabelPaint = Paint(ANTI_ALIAS_FLAG).apply {
         color = labelColor
-        textSize = TEXT_SIZE
+        textSize = labelSize
         textAlign = Paint.Align.CENTER
     }
 
     private val yAxisLabelPaint = Paint(ANTI_ALIAS_FLAG).apply {
         color = labelColor
-        textSize = TEXT_SIZE
+        textSize = labelSize
         textAlign = Paint.Align.RIGHT
     }
 
@@ -207,7 +207,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             for (numericLabel in stepSize..maxValue.roundToInt() step stepSize) {
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
                 val bottomOffset =
-                    paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
+                    paddingBottom.toFloat() + BOTTOM_MARGIN + labelSize + SPACING_TEXT_TO_BAR
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
 
                 val scaleFactor = numericLabel.toFloat().div(maxValue)
@@ -221,7 +221,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 drawText(
                     label,
                     paddingStart.toFloat() + maxTextWidth,
-                    pos + TEXT_SIZE + 10f, // TODO: Move 5f to Margin
+                    pos + labelSize + 10f, // TODO: Move 5f to Margin
                     yAxisLabelPaint
                 )
 
@@ -242,7 +242,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
                 val bottomOffset =
-                    paddingBottom.toFloat() + BOTTOM_MARGIN + TEXT_SIZE + SPACING_TEXT_TO_BAR
+                    paddingBottom.toFloat() + BOTTOM_MARGIN + labelSize + SPACING_TEXT_TO_BAR
 
                 val maxBarHeight = totalHeight - (topOffset + bottomOffset)
                 val scaleFactor = point.value.div(maxValue)

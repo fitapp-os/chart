@@ -12,7 +12,15 @@
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="220dp"
+            app:labelSize="@dimen/chartTextSize"
             app:barStartColor="@color/colorPrimary"
             app:barEndColor="@color/colorPrimaryDark"/>
+
+    <TextView android:layout_width="match_parent"
+              android:layout_margin="10dp"
+              android:fontFamily="@font/rubik_regular"
+              android:layout_height="wrap_content"
+              android:text="@string/textSizeTest"
+              android:textSize="@dimen/chartTextSize"/>
 
 </LinearLayout>
