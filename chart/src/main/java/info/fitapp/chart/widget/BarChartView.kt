@@ -36,6 +36,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
     }
 
+    private var gridColor = ContextCompat.getColor(context, R.color.barChartDefaultHorizontalGridColor)
     private var barStartColor = ContextCompat.getColor(context, R.color.barChartDefaultBarStartColor)
     private var barEndColor = ContextCompat.getColor(context, R.color.barChartDefaultBarEndColor)
     private var comparisonStartColor = ContextCompat.getColor(context, R.color.barChartDefaultComparisonStart)
@@ -50,6 +51,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         ).apply {
 
             try {
+                gridColor = getColor(R.styleable.BarChartView_gridColor, gridColor)
                 barStartColor = getColor(R.styleable.BarChartView_barStartColor, barStartColor)
                 barEndColor = getColor(R.styleable.BarChartView_barEndColor, barEndColor)
                 comparisonStartColor = getColor(R.styleable.BarChartView_comparisonStartColor, comparisonStartColor)
@@ -100,7 +102,7 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
     private val horizontalLinePaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = ContextCompat.getColor(context, R.color.barChartDefaultHorizontalGridColor)
+        color = gridColor
         strokeWidth = 2f
     }
 
