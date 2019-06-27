@@ -1,8 +1,8 @@
 package info.fitapp.chart
 
 import android.os.Bundle
-import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import info.fitapp.chart.model.DataPoint
 import info.fitapp.chart.model.DataSet
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,18 +15,18 @@ class MainActivity : AppCompatActivity() {
 
         val dataSet = DataSet()
 
-        dataSet.items.add(DataPoint(11f, "Jan"))
-        dataSet.items.add(DataPoint(18f, "Feb"))
-        dataSet.items.add(DataPoint(2f, "Mar"))
-        dataSet.items.add(DataPoint(3f, "Apr"))
-        dataSet.items.add(DataPoint(4f, "May"))
-        dataSet.items.add(DataPoint(6f, "Jun"))
-        dataSet.items.add(DataPoint(12f, "Jul"))
-        dataSet.items.add(DataPoint(8f, "Aug"))
-        dataSet.items.add(DataPoint(10f, "Sep"))
-        dataSet.items.add(DataPoint(16f, "Oct"))
-        dataSet.items.add(DataPoint(17f, "Nov"))
-        dataSet.items.add(DataPoint(11f, "Dec"))
+        dataSet.items.add(DataPoint(11f, "Jan").apply { comparisonValue = 8f })
+        dataSet.items.add(DataPoint(18f, "Feb").apply { comparisonValue = 9f })
+        dataSet.items.add(DataPoint(2f, "Mar").apply { comparisonValue = 0f })
+        dataSet.items.add(DataPoint(3f, "Apr").apply { comparisonValue = 5f })
+        dataSet.items.add(DataPoint(4f, "May").apply { comparisonValue = 18f })
+        dataSet.items.add(DataPoint(6f, "Jun").apply { comparisonValue = 5f })
+        dataSet.items.add(DataPoint(12f, "Jul").apply { comparisonValue = 2f })
+        dataSet.items.add(DataPoint(8f, "Aug").apply { comparisonValue = 1f })
+        dataSet.items.add(DataPoint(10f, "Sep").apply { comparisonValue = 8f })
+        dataSet.items.add(DataPoint(16f, "Oct").apply { comparisonValue = 10f })
+        dataSet.items.add(DataPoint(17f, "Nov").apply { comparisonValue = 11f })
+        dataSet.items.add(DataPoint(11f, "Dec").apply { comparisonValue = 12f })
 
         /*
         dataSet.items.add(DataPoint(10f, "Mo"))

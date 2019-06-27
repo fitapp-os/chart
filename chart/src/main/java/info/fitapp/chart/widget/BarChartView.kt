@@ -4,10 +4,10 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.graphics.Paint.ANTI_ALIAS_FLAG
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import androidx.core.content.ContextCompat
 import info.fitapp.chart.R
 import info.fitapp.chart.model.DataSet
 import kotlin.math.roundToInt
@@ -36,6 +36,31 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
     }
 
+    private var barStartColor = ContextCompat.getColor(context, R.color.barChartDefaultBarStartColor)
+    private var barEndColor = ContextCompat.getColor(context, R.color.barChartDefaultBarEndColor)
+    private var comparisonStartColor = ContextCompat.getColor(context, R.color.barChartDefaultComparisonStart)
+    private var comparisonEndColor = ContextCompat.getColor(context, R.color.barChartDefaultComparisonEnd)
+    private var labelColor = ContextCompat.getColor(context, R.color.barChartDefaultLabelColor)
+
+    init {
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.BarChartView,
+            0, 0
+        ).apply {
+
+            try {
+                barStartColor = getColor(R.styleable.BarChartView_barStartColor, barStartColor)
+                barEndColor = getColor(R.styleable.BarChartView_barEndColor, barEndColor)
+                comparisonStartColor = getColor(R.styleable.BarChartView_comparisonStartColor, comparisonStartColor)
+                comparisonEndColor = getColor(R.styleable.BarChartView_comparisonEndColor, comparisonEndColor)
+                labelColor = getColor(R.styleable.BarChartView_labelColor, labelColor)
+            } finally {
+                recycle()
+            }
+        }
+    }
+
     private var showComparisonIfAvailable = true
     private var totalHeight = 0
     private var totalWidth = 0
@@ -62,20 +87,20 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
     }
 
     private val xAxisLabelPaint = Paint(ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.labelColor)
+        color = labelColor
         textSize = TEXT_SIZE
         textAlign = Paint.Align.CENTER
     }
 
     private val yAxisLabelPaint = Paint(ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.labelColor)
+        color = labelColor
         textSize = TEXT_SIZE
         textAlign = Paint.Align.RIGHT
     }
 
     private val horizontalLinePaint = Paint(ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = ContextCompat.getColor(context, R.color.horizontalGridColor)
+        color = ContextCompat.getColor(context, R.color.barChartDefaultHorizontalGridColor)
         strokeWidth = 2f
     }
 
@@ -142,8 +167,8 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             0f,
             0f,
             h.toFloat(),
-            ContextCompat.getColor(context, R.color.gradientStart),
-            ContextCompat.getColor(context, R.color.gradientEnd),
+            barStartColor,
+            barEndColor,
             Shader.TileMode.CLAMP
         )
 
@@ -152,8 +177,8 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
             0f,
             0f,
             h.toFloat(),
-            ContextCompat.getColor(context, R.color.comparisonGradientStart),
-            ContextCompat.getColor(context, R.color.coparisonGradientEnd),
+            comparisonStartColor,
+            comparisonEndColor,
             Shader.TileMode.CLAMP
         )
     }

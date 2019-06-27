@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BarChartView">
+        <attr name="barStartColor" format="color"/>
+        <attr name="barEndColor" format="color"/>
+        <attr name="comparisonStartColor" format="color"/>
+        <attr name="comparisonEndColor" format="color"/>
+        <attr name="labelColor" format="color"/>
+    </declare-styleable>
+</resources>

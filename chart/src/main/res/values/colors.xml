@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="gradientStart">#9a298d</color>
-    <color name="gradientEnd">#173f8c</color>
-    <color name="comparisonGradientStart">#E0E0E0</color>
-    <color name="coparisonGradientEnd">#C4C4C4</color>
-    <color name="chartBackground">#E2E2E2</color>
-    <color name="horizontalGridColor">#e9e9e9</color>
-    <color name="labelColor">#504e5d</color>
+    <color name="barChartDefaultBarStartColor">#8BC34A</color>
+    <color name="barChartDefaultBarEndColor">#4CAF50</color>
+    <color name="barChartDefaultComparisonStart">#E0E0E0</color>
+    <color name="barChartDefaultComparisonEnd">#C4C4C4</color>
+    <color name="barChartDefaultLabelColor">#504e5d</color>
+    <color name="barChartDefaultHorizontalGridColor">#e9e9e9</color>
 </resources>
