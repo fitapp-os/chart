@@ -1,48 +1,20 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
 
 group = "info.fitapp"
 version = "2.1.0"
 
-ext {
-
-    bintrayRepo = "maven"
-    bintrayName = "chart"
-
-    publishedGroupId = 'info.fitapp'
-    libraryName = 'chart'
-    artifact = 'chart'
-
-    libraryDescription = 'Add simple bar charts to your Android project'
-
-    siteUrl = 'https://github.com/fitapp-os/chart'
-    gitUrl = 'https://github.com/fitapp-os/chart.git'
-
-    libraryVersion = version
-
-    developerId = 'fitapp'
-    developerName = 'Markus Deutsch'
-    developerEmail = 'markus.deutsch@fitapp.info'
-
-    licenseName = 'GNU Lesser General Public License v3.0'
-    licenseUrl = 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
-    allLicenses = ["LGPL-3.0"]
-}
-
 android {
-    compileSdkVersion 29
+    namespace 'info.fitapp.chart'
+    compileSdk 34
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 29
+        minSdk 21
+        targetSdk 34
         versionCode 3
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -52,21 +24,21 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
-}
-
-if (project.rootProject.file('local.properties').exists()) {
-    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/install.gradle'
-    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/bintray.gradle'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

@@ -1,17 +1,20 @@
-package info.fitapp.chart
+package info.fitapp.chart.sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import info.fitapp.chart.model.DataPoint
 import info.fitapp.chart.model.DataSet
-import kotlinx.android.synthetic.main.activity_main.*
+import info.fitapp.chart.sample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val dataSet = DataSet()
 
@@ -67,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         dataSet.items.add(DataPoint(4f, "Mi"))
         */
 
-        chart.setDataSet(dataSet)
-        chart.setTypeface(ResourcesCompat.getFont(this, R.font.rubik_regular)!!)
+        binding.chart.setDataSet(dataSet)
+        binding.chart.setTypeface(ResourcesCompat.getFont(this, R.font.rubik_regular)!!)
     }
 }

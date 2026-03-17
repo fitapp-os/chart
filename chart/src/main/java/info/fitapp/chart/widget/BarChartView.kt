@@ -185,14 +185,14 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
         )
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         val data = dataSet
         val maxValue = if (showComparisonIfAvailable) data?.getMaxValue() else data?.getPrimaryMaxValue()
         if (data == null || maxValue == null || data.getSize() <= 0 || maxValue <= 0) return
 
-        canvas?.apply {
+        canvas.apply {
 
             val stepSize = data.stepMaker.getStepSize(NUMBER_OF_LABELS, maxValue)
             var maxTextWidth = 0f
