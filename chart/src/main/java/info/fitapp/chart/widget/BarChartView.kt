@@ -238,7 +238,13 @@ class BarChartView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
             val comparisonGap = totalWithPerPoint * COMPARISON_SHIFT
 
-            data.items.forEachIndexed { index, point ->
+            val itemsForLayout = if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+                data.items.asReversed()
+            } else {
+                data.items
+            }
+
+            itemsForLayout.forEachIndexed { index, point ->
 
                 val topOffset = paddingTop.toFloat() + TOP_MARGIN
                 val bottomOffset =

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Chart</string>
+    <string name="rtl_toggle_label">Preview RTL chart order</string>
     <string name="textSizeTest">Jan Mar May Jul Sep Nov \nThis text should be the same size as the chart labels.
     </string>
 </resources>

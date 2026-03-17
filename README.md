@@ -13,6 +13,6 @@ And then include the dependency:
 
 ```groovy
     dependencies {
-	    implementation 'com.github.fitapp-os:chart:v2.1.0'
+	    implementation 'com.github.fitapp-os:chart:v2.2.0'
     }
 ```

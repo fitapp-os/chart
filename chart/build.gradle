@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 group = "info.fitapp"
-version = "2.1.0"
+version = "2.2.0"
 
 android {
     namespace 'info.fitapp.chart'
@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 34
-        versionCode 3
+        versionCode 4
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

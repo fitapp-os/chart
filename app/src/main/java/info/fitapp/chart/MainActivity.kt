@@ -1,6 +1,7 @@
 package info.fitapp.chart.sample
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import info.fitapp.chart.model.DataPoint
@@ -72,5 +73,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.chart.setDataSet(dataSet)
         binding.chart.setTypeface(ResourcesCompat.getFont(this, R.font.rubik_regular)!!)
+        binding.rtlToggle.setOnCheckedChangeListener { _, isChecked ->
+            binding.chart.layoutDirection = if (isChecked) {
+                View.LAYOUT_DIRECTION_RTL
+            } else {
+                View.LAYOUT_DIRECTION_LTR
+            }
+            binding.chart.invalidate()
+        }
     }
 }
